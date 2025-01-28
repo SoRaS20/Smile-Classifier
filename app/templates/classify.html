@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smile Classifier - Classify Image</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #e5e6e1;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styling */
+        nav {
+            width: 100%;
+            background-color: #2980b9;
+            padding: 15px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Navigation Links */
+        nav a {
+            color: #0f0f0f;  /* Updated text color to light gray */
+            text-decoration: none;
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 0 20px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #0f0f0f;
+        }
+
+        /* Title in Navbar */
+        .nav-title {
+            color: #111212;  /* Updated text color to light gray */
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-title:hover {
+            transform: scale(1.1);
+        }
+
+        /* Main Container */
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            margin-top: 80px;
+            transition: transform 0.3s ease;
+        }
+
+        /* Header Styling */
+        h1 {
+            color: #2c3e50;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        /* Subtitle */
+        h2 {
+            color: #2980b9;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        /* Paragraphs Styling */
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            animation: fadeIn 1.5s 0.5s forwards;
+        }
+
+        /* Links / Buttons */
+        .btn {
+            background-color: #2980b9;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3498db;
+        }
+
+        .btn:active {
+            background-color: #1f6d93;
+        }
+
+        /* Section Styling */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+
+            nav a {
+                font-size: 1rem;
+            }
+
+            .nav-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation for fade-in */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Styling */
+        form {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3498db;
+        }
+
+        /* Result Display */
+        img {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+        }
+
+        a {
+            display: inline-block;
+            margin: 20px;
+            padding: 12px 28px;
+            color: white;
+            background-color: #2980b9;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        a:hover {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-title" onclick="smoothScroll('home')">Smile Classifier</div>
+        <div>
+            <a href="/" onclick="smoothScroll('home')">Home</a>
+            <a href="/classify" onclick="smoothScroll('classify')">Classify</a>
+            <a href="/history" onclick="smoothScroll('history')">History</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" id="home">
+        <h1>Classify Image</h1>
+
+        <!-- Display success message -->
+        {% if message %}
+        <div class="alert" style="color: green; font-weight: bold;">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <form action="/classify/" method="post" enctype="multipart/form-data">
+            <label for="file">Upload an image (JPG or PNG):</label>
+            <input type="file" id="file" name="file" accept="image/*" required>
+            <button type="submit">Classify</button>
+        </form>
+
+        {% if result %}
+        <h2>Result: {{ result }}</h2>
+        <img src="{{ image_path }}" alt="Uploaded Image" width="300">
+        {% endif %}
+
+    </div>
+
+    <script>
+        // Smooth scroll functionality for anchor links
+        function smoothScroll(targetId) {
+            const target = document.getElementById(targetId);
+            window.scrollTo({
+                top: target.offsetTop - 80,  // Adjust the scroll position to account for navbar
+                behavior: 'smooth'
+            });
+        }
+
+        // Optional: Change navbar background color on scroll for better visibility
+        window.onscroll = function() {
+            if (window.scrollY > 100) {
+                document.querySelector('nav').style.backgroundColor = '#2980b9';
+            } else {
+                document.querySelector('nav').style.backgroundColor = 'transparent';
+            }
+        };
+    </script>
+</body>
+</html>
